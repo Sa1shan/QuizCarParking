@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5633725417854270546}
   - component: {fileID: 1906255414361456810}
   - component: {fileID: 3327153656165739876}
+  - component: {fileID: 6447692843901461561}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -92,6 +93,19 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3729994526678274797}
   m_Enabled: 1
+--- !u!114 &6447692843901461561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3729994526678274797}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 481b78589d8ba5e479e5a6fbe5254e38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 6584899676449565417}
 --- !u!1 &5357751034982521734
 GameObject:
   m_ObjectHideFlags: 0
@@ -401,12 +415,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf17c666b295cbe408adfa346f938880, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  accelerationForce: 1500
+  _rb: {fileID: 0}
   maxSpeed: 20
-  turnTorque: 100
+  accelerationForce: 1500
   dragFactor: 0.98
   sidewaysFriction: 0.85
+  minVelocityThreshold: 0.1
+  turnTorque: 100
   turnSmoothing: 5
+  turnSensitivity: 1
 --- !u!1 &7947025805021478932 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -5050035660690663508, guid: 7e54ae33731fbdd48b7761764d1d775b, type: 3}
