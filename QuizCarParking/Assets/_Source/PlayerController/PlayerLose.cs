@@ -1,18 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-
 public class PlayerLose : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private GameObject nextLevelMassage;
+    
+    private void OnTriggerStay(Collider other)
     {
-        
+        if (IsFullyInside(other))
+        {
+            Time.timeScale = 0;
+            Debug.Log("Объект полностью внутри триггера");
+            nextLevelMassage.SetActive(true);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private bool IsFullyInside(Collider other)
     {
-        
+        Collider triggerCollider = GetComponent<Collider>();
+        return triggerCollider.bounds.Contains(other.bounds.min) && triggerCollider.bounds.Contains(other.bounds.max);
     }
 }
