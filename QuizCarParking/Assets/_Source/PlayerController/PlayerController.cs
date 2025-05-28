@@ -16,13 +16,14 @@ namespace _Source.PlayerController
         public float minVelocityThreshold = 0.1f;
         public float turnTorque = 10f;
         public float turnSmoothing = 5f;
+        private float _turnDisableSpeedThreshold = 0.1f;
 
         public event Action<ITransmission> OnTransmissionChanged;
         
-        private float turnSpeed = 3f;
-        public float turnSensitivity = 1f;
-        private float screenCenterX;
-        private float currentTurnInput;
+        private float _turnSpeed = 300f;
+        public float turnSensitivity = 100f;
+        private float _screenCenterX;
+        private float _currentTurnInput;
 
         
         void Start()
@@ -30,7 +31,7 @@ namespace _Source.PlayerController
             _rb = GetComponent<Rigidbody>();
             _rb.centerOfMass = new Vector3(0, -0.5f, 0);
             SetTransmissionState(new ParkingTransmission(this));  // Начальное состояние трансмиссии
-            screenCenterX = Screen.width / 2f;
+            _screenCenterX = Screen.width / 2f;
 
         }
 
@@ -125,25 +126,35 @@ namespace _Source.PlayerController
         void HandleSteering()
         {
             float mouseX = Input.mousePosition.x;
-            float targetTurnInput = (mouseX - screenCenterX) / screenCenterX; // От -1 до 1
-                
-            // Плавно меняем поворот, но теперь через turnSpeed
-            currentTurnInput = Mathf.Lerp(currentTurnInput, targetTurnInput, Time.deltaTime * turnSpeed);
-                
-            // Ограничиваем диапазон значений от -1 до 1
-            float clampedTurnInput = Mathf.Clamp(currentTurnInput, -1f, 1f);
-                
+            float targetTurnInput = (mouseX - _screenCenterX) / _screenCenterX;  // От -1 до 1
+
+            // Плавное сглаживание поворота
+            _currentTurnInput = Mathf.Lerp(_currentTurnInput, targetTurnInput, Time.deltaTime * _turnSpeed * 50f);
+
+            float clampedTurnInput = Mathf.Clamp(_currentTurnInput, -1f, 1f);
             float directionMultiplier = Vector3.Dot(_rb.velocity, transform.forward) >= 0 ? 1f : -1f;
-                
+
+            float speedSqr = _rb.velocity.sqrMagnitude;  // Используем квадрат скорости для сравнения
+            float thresholdSqr = _turnDisableSpeedThreshold * _turnDisableSpeedThreshold;
+
+            // 🚫 Отключаем поворот при торможении (S) или если не нажата W и скорость меньше порога
+            if ((Input.GetKey(KeyCode.S) || !Input.GetKey(KeyCode.W)) && speedSqr < thresholdSqr)
+            {
+                _currentTurnInput = 0f;
+                _rb.angularVelocity = Vector3.zero;  // Полностью сбрасываем вращение
+                return;
+            }
+
+            // Вращение только если есть скорость
             if (Mathf.Abs(clampedTurnInput) > 0.05f && _rb.velocity.magnitude > 1f)
             {
-                float turnStrength = Mathf.Clamp(_rb.velocity.magnitude / maxSpeed, 0.2f, 1f);
+                float turnStrength = Mathf.Clamp(_rb.velocity.magnitude / maxSpeed, 0.7f, 1f);
                 Vector3 turnForce = Vector3.up * clampedTurnInput * turnTorque * turnStrength * turnSensitivity * Time.fixedDeltaTime * directionMultiplier;
-                
+
                 _rb.angularVelocity = Vector3.Lerp(_rb.angularVelocity, turnForce, Time.fixedDeltaTime * turnSmoothing);
             }
         }
-
+        
 
         // Применение тормозного усилия
         void ApplyDrag()
@@ -168,7 +179,38 @@ namespace _Source.PlayerController
                 _rb.angularVelocity = Vector3.zero;
             }
         }
-        
-        
     }
 }
+
+
+// Полностью отключаем поворот при маленькой скорости 
+// void HandleSteering()
+// {
+//     float mouseX = Input.mousePosition.x;
+//     float targetTurnInput = (mouseX - _screenCenterX) / _screenCenterX;  // От -1 до 1
+//
+//     // Плавное сглаживание поворота
+//     _currentTurnInput = Mathf.Lerp(_currentTurnInput, targetTurnInput, Time.deltaTime * _turnSpeed * 50f);
+//
+//     float clampedTurnInput = Mathf.Clamp(_currentTurnInput, -1f, 1f);
+//     float directionMultiplier = Vector3.Dot(_rb.velocity, transform.forward) >= 0 ? 1f : -1f;
+//
+//     float speed = _rb.velocity.magnitude;
+//
+//     // 🚫 Отключаем поворот при торможении (S) или если не нажата W
+//     if (Input.GetKey(KeyCode.S) || !Input.GetKey(KeyCode.W))
+//     {
+//         _currentTurnInput = 0f;
+//         _rb.angularVelocity = Vector3.zero;
+//         return;
+//     }
+//
+//     // Вращение только если есть скорость
+//     if (Mathf.Abs(clampedTurnInput) > 0.05f && speed > 1f)
+//     {
+//         float turnStrength = Mathf.Clamp(speed / maxSpeed, 0.7f, 1f);
+//         Vector3 turnForce = Vector3.up * clampedTurnInput * turnTorque * turnStrength * turnSensitivity * Time.fixedDeltaTime * directionMultiplier;
+//
+//         _rb.angularVelocity = Vector3.Lerp(_rb.angularVelocity, turnForce, Time.fixedDeltaTime * turnSmoothing);
+//     }
+// }

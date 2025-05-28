@@ -9,7 +9,7 @@ namespace _Source.Button
     {
         [SerializeField] private GameObject car;
         [SerializeField] private Transform point;
-        [SerializeField] private float speed = 1f;
+        [SerializeField] private float speed = 80f;
         
         private bool _clicked;
         private Rigidbody _rb;
@@ -30,6 +30,11 @@ namespace _Source.Button
             {
                 Vector3 newPosition = new Vector3(_rb.position.x, point.position.y, Mathf.MoveTowards(_rb.position.z, point.position.z, speed * Time.deltaTime));
                 _rb.MovePosition(newPosition);
+            }
+
+            if (Mathf.Approximately(car.transform.position.z, point.position.z))
+            {
+                _rb.constraints = RigidbodyConstraints.FreezeAll;
             }
         }
     }
