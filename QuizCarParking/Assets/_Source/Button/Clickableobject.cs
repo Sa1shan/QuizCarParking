@@ -1,4 +1,5 @@
 using System;
+using _Source.Tutorial;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,6 +11,7 @@ namespace _Source.Button
         [SerializeField] private GameObject car;
         [SerializeField] private Transform point;
         [SerializeField] private float speed = 80f;
+        [SerializeField] private CarsHighlight highlight;
         
         private bool _clicked;
         private Rigidbody _rb;
@@ -23,13 +25,14 @@ namespace _Source.Button
         {
             _rb = GetComponent<Rigidbody>();
         }
-
+        
         void FixedUpdate()
         {
             if (_clicked)
             {
                 Vector3 newPosition = new Vector3(_rb.position.x, point.position.y, Mathf.MoveTowards(_rb.position.z, point.position.z, speed * Time.deltaTime));
                 _rb.MovePosition(newPosition);
+                highlight.StopAnimation();
             }
 
             if (Mathf.Approximately(car.transform.position.z, point.position.z))
