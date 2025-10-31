@@ -13,7 +13,6 @@ namespace _Source.UI
 
         private void Start()
         {
-            // Сначала делаем все изображения из списка прозрачными и активными
             foreach (var img in images)
             {
                 img.gameObject.SetActive(false);

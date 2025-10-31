@@ -7,8 +7,7 @@ namespace _Source.PlayerController
     {
         void PerformMovement(float moveInput);
     }
-
-    // Классы состояний трансмиссии
+    
 
     public class DriveTransmission : ITransmission
     {
@@ -45,11 +44,11 @@ namespace _Source.PlayerController
         {
             if (moveInput > 0)
             {
-                _controller.MoveBackward(moveInput); // Едем вперед
+                _controller.MoveBackward(moveInput); 
             }
             else if (moveInput < 0)
             {
-                _controller.ApplyBraking(); // Тормозим при нажатии S
+                _controller.ApplyBraking();
             }
         }
     }

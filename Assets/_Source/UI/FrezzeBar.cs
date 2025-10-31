@@ -15,7 +15,6 @@ namespace _Source.UI
         }
         void Update()
         {
-            // Если firstImage неактивен и canCloseImage == false
             if (camera.gameObject.activeSelf)
             {
                 image.gameObject.SetActive(true);

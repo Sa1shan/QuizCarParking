@@ -5,15 +5,15 @@ namespace _Source.UI
 {
     public class WheelRotate : MonoBehaviour
     {
-        public float turnSpeed = 5f; // Скорость поворота
-        public float turnSmoothing = 5f; // Плавность поворота
+        public float turnSpeed = 5f; 
+        public float turnSmoothing = 5f;
 
         private float screenCenterX;
         private float currentTurnInput;
 
         void Start()
         {
-            screenCenterX = Screen.width * 0.5f; // Находим центр экрана по X
+            screenCenterX = Screen.width * 0.5f;
         }
 
         void Update()
@@ -24,18 +24,14 @@ namespace _Source.UI
         void HandleSteering()
         {
             float mouseX = Input.mousePosition.x;
-            float targetTurnInput = (mouseX - screenCenterX) / screenCenterX; // Получаем значение от -1 до 1
-
-            // Плавно интерполируем входной поворот
+            float targetTurnInput = (mouseX - screenCenterX) / screenCenterX; 
+            
             currentTurnInput = Mathf.Lerp(currentTurnInput, targetTurnInput, Time.deltaTime * turnSmoothing);
-
-            // Ограничиваем диапазон значений
+            
             float clampedTurnInput = Mathf.Clamp(currentTurnInput, -1f, 1f);
-
-            // Вычисляем угол поворота
+            
             float rotationAmount = clampedTurnInput * turnSpeed * Time.deltaTime;
-
-            // Применяем поворот вокруг оси Y
+            
             transform.rotation *= Quaternion.Euler(0, 0, -rotationAmount);
         }
     }
